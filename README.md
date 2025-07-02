@@ -23,6 +23,10 @@ PrMers: GPU-accelerated Mersenne Primality Test
 
     nix profile install github:proski/mathflake#prmers
 
+mfakto: OpenCL based trial factoring program for Mersenne Primes
+
+    nix profile install github:proski/mathflake#mfakto
+
 ## Enabling GPU support
 
 To enable support for your GPU, configure `hardware.graphics.extraPackages` in

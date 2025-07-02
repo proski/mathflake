@@ -1,0 +1,88 @@
+From 59e8cfc424a0e8757c7726513d99064db2d1e734 Mon Sep 17 00:00:00 2001
+From: Pavel Roskin <plroskin@gmail.com>
+Date: Tue, 1 Jul 2025 22:38:12 -0700
+Subject: [PATCH] NixOS patch
+
+---
+ src/mfakto.cpp | 34 ++++++++++++++++++++++++++++++----
+ 1 file changed, 30 insertions(+), 4 deletions(-)
+
+diff --git a/src/mfakto.cpp b/src/mfakto.cpp
+index 61660da..917543a 100644
+--- a/src/mfakto.cpp
++++ b/src/mfakto.cpp
+@@ -21,6 +21,7 @@ along with mfaktc (mfakto).  If not, see <http://www.gnu.org/licenses/>.
+ #include <cstdlib>
+ #include <iostream>
+ #include <fstream>
++#include <string>
+ #ifdef _MSC_VER
+ #include <tuple>
+ #endif
+@@ -114,6 +115,27 @@ kernel_info_t       kernel_info[] = {
+      {   UNKNOWN_GS_KERNEL,   "UNKNOWN GS kernel",     0,      0,         0,      NULL}, // delimiter
+ };
+ 
++std::string getExecutableDir() {
++    char buffer[1024];
++
++#ifdef __APPLE__
++    uint32_t size = sizeof(buffer);
++    if (_NSGetExecutablePath(buffer, &size) != 0)
++        throw std::runtime_error("Cannot get executable path (macOS).");
++#elif defined(_WIN32)
++    if (!GetModuleFileNameA(NULL, buffer, sizeof(buffer)))
++        throw std::runtime_error("Cannot get executable path (Windows).");
++#else
++    ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer)-1);
++    if (len == -1)
++        throw std::runtime_error("Cannot get executable path (Linux).");
++    buffer[len] = '\0';
++#endif
++
++    std::string fullPath(buffer);
++    return fullPath.substr(0, fullPath.find_last_of("/\\"));
++}
++
+ /* allocate memory buffer arrays, test a small kernel */
+ int init_CLstreams(int gs_reinit_only)
+ {
+@@ -799,11 +821,13 @@ int load_kernels(cl_int *devnumber)
+   }
+   else
+   {
++    std::string execDir = getExecutableDir();
++    std::string kernel_dir = execDir + "/../share/mfakto";
+     snprintf(
+       program_options,
+       sizeof(program_options),
+-      "-I. -DVECTOR_SIZE=%d -D%s",
+-      mystuff.vectorsize, gpu_types[mystuff.gpu_type].gpu_name
++      "-I%s -DVECTOR_SIZE=%d -D%s",
++      kernel_dir.c_str(), mystuff.vectorsize, gpu_types[mystuff.gpu_type].gpu_name
+     );
+   #ifdef CL_DEBUG
+     strcat(program_options, " -g");
+@@ -916,7 +940,9 @@ int load_kernels(cl_int *devnumber)
+ 
+   if (!program) // load binary failed or is not enabled
+   {
+-    std::fstream f(KERNEL_FILE, (std::fstream::in | std::fstream::binary));
++    std::string execDir = getExecutableDir();
++    std::string kernel_file = execDir + "/../share/mfakto/" KERNEL_FILE;
++    std::fstream f(kernel_file, (std::fstream::in | std::fstream::binary));
+ 
+     if(f.is_open())
+     {
+@@ -938,7 +964,7 @@ int load_kernels(cl_int *devnumber)
+     }
+     else
+     {
+-      std::cerr << "\nKernel file \"" KERNEL_FILE "\" not found, it needs to be in the same directory as the executable.\n";
++      std::cerr << "\nKernel file \"" << kernel_file << "\" not found.\n";
+       return 1;
+     }
+ 
+-- 
+2.49.0
+

@@ -28,6 +28,7 @@
     in
     {
       packages = forSystems supportedSystems (pkgs: rec {
+        mfakto = pkgs.callPackage mfakto/package.nix { };
         prmers = pkgs.callPackage prmers/package.nix { };
         default = prmers;
       });
