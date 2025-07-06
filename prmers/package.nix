@@ -9,7 +9,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "prmers";
-  version = "4.0.34-alpha";
+  version = "4.0.50-alpha";
 
   src = fetchFromGitHub {
     owner = "cherubrock-seb";
