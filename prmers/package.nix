@@ -1,5 +1,6 @@
 {
   curl,
+  gmpxx,
   fetchFromGitHub,
   lib,
   ocl-icd,
@@ -9,17 +10,18 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "prmers";
-  version = "4.0.50-alpha";
+  version = "4.3.9-alpha";
 
   src = fetchFromGitHub {
     owner = "cherubrock-seb";
     repo = "prmers";
     rev = "v${finalAttrs.version}";
-    sha256 = "sha256-mMPyYj2uOSYq07zXUxNhF84WcopM5uM0ax6chltRn/k=";
+    sha256 = "sha256-0u+g3JAG+bhI04HdiIs33TYi3ptBy0+5zgx6RXG+gUs=";
   };
 
   buildInputs = [
     curl
+    gmpxx
     ocl-icd
     opencl-headers
   ];
