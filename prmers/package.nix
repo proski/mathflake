@@ -10,13 +10,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "prmers";
-  version = "4.10.31-alpha";
+  version = "4.13.10-alpha";
 
   src = fetchFromGitHub {
     owner = "cherubrock-seb";
     repo = "prmers";
     rev = "v${finalAttrs.version}";
-    sha256 = "sha256-tmN6ZCcoREXad8PIu8BV9UgdxUuiY/v18RAuc7Y9o1s=";
+    sha256 = "sha256-BUBRySGK1NvX1E0xQ5GNJBX8KNs7T52VDKEFXXZTibQ=";
   };
 
   buildInputs = [
