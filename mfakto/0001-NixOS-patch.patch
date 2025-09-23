@@ -1,12 +1,18 @@
-From 59e8cfc424a0e8757c7726513d99064db2d1e734 Mon Sep 17 00:00:00 2001
-From: Pavel Roskin <plroskin@gmail.com>
-Date: Tue, 1 Jul 2025 22:38:12 -0700
-Subject: [PATCH] NixOS patch
-
----
- src/mfakto.cpp | 34 ++++++++++++++++++++++++++++++----
- 1 file changed, 30 insertions(+), 4 deletions(-)
-
+diff --git a/src/mfaktc.c b/src/mfaktc.c
+index 96cccfa..7d59458 100644
+--- a/src/mfaktc.c
++++ b/src/mfaktc.c
+@@ -1196,8 +1196,8 @@ int main(int argc, char **argv)
+         logprintf(&mystuff, "ERROR: missing parameters for option \"-i <inifile>\".\n");
+         return ERR_PARAM;
+       }
+-      strncpy(mystuff.inifile, argv[i], 50);
+-      mystuff.inifile[50]='\0';
++      strncpy(mystuff.inifile, argv[i], sizeof(mystuff.inifile) - 1);
++      mystuff.inifile[sizeof(mystuff.inifile) - 1]='\0';
+     }
+     else if(!strcmp((char*)"--perftest", argv[i]))
+     {
 diff --git a/src/mfakto.cpp b/src/mfakto.cpp
 index 61660da..917543a 100644
 --- a/src/mfakto.cpp
@@ -83,6 +89,56 @@ index 61660da..917543a 100644
        return 1;
      }
  
--- 
-2.49.0
-
+diff --git a/src/my_types.h b/src/my_types.h
+index 99c4676..33c3ba7 100644
+--- a/src/my_types.h
++++ b/src/my_types.h
+@@ -302,7 +302,7 @@ typedef struct _mystuff_t
+   stats_t  stats;            /* stats for the status line */
+ 
+   char workfile[51];         /* allow filenames up to 50 chars... */
+-  char inifile[51];	         /* allow filenames up to 50 chars... */
++  char inifile[128];         /* allow filenames up to 127 chars... */
+   char resultfile[51];
+   char jsonresultfile[51];
+   char logfile[51];
+diff --git a/src/read_config.c b/src/read_config.c
+index 9bec373..1d17958 100644
+--- a/src/read_config.c
++++ b/src/read_config.c
+@@ -43,9 +43,9 @@ int my_read_int(char *inifile, char *name, int *value)
+   {
+     if (!inifile_unavailable)
+     {
+-      char msg[80];
++      char msg[180];
+       inifile_unavailable = 1;
+-      sprintf(msg, "Cannot load INI file \"%.55s\"", inifile);
++      sprintf(msg, "Cannot load INI file \"%s\"", inifile);
+       perror(msg);
+     }
+     return 1;
+@@ -73,9 +73,9 @@ static int my_read_ulong(char *inifile, char *name, unsigned long long int *valu
+   {
+     if (!inifile_unavailable)
+     {
+-      char msg[80];
++      char msg[180];
+       inifile_unavailable = 1;
+-      sprintf(msg, "Cannot load INI file \"%.55s\"", inifile);
++      sprintf(msg, "Cannot load INI file \"%s\"", inifile);
+       perror(msg);
+     }
+     return 1;
+@@ -108,9 +108,9 @@ int my_read_string(char *inifile, char *name, char *string, unsigned int len)
+   {
+     if (!inifile_unavailable)
+     {
+-      char msg[80];
++      char msg[180];
+       inifile_unavailable = 1;
+-      sprintf(msg, "Cannot load INI file \"%.55s\"", inifile);
++      sprintf(msg, "Cannot load INI file \"%s\"", inifile);
+       perror(msg);
+     }
+     return 1;

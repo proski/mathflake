@@ -1,6 +1,7 @@
 {
   fetchFromGitHub,
   lib,
+  makeWrapper,
   ocl-icd,
   opencl-headers,
   stdenv,
@@ -24,6 +25,8 @@ stdenv.mkDerivation (finalAttrs: {
     opencl-headers
   ];
 
+  nativeBuildInputs = [ makeWrapper ];
+
   buildPhase = ''
     runHook preBuild
 
@@ -36,10 +39,15 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     mkdir -p $out/bin $out/share/mfakto
-    install -m755 mfakto $out/bin
+    install -m755 mfakto $out/bin/mfakto
     install -m644 datatypes.h tf_debug.h mfakto.ini *.cl $out/share/mfakto
 
     runHook postInstall
+  '';
+
+  postInstall = ''
+    wrapProgram "$out/bin/mfakto" \
+      --add-flags "-i $out/share/mfakto/mfakto.ini"
   '';
 
   enableParallelBuilding = true;
