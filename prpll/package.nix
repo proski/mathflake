@@ -45,7 +45,7 @@ stdenv.mkDerivation (finalAttrs: {
       ("PRobable Prime") and LL ("Lucas-Lehmer").
     '';
     homepage = "https://www.mersenneforum.org/node/144";
-    license = licenses.gpl3;
+    license = lib.licenses.gpl3;
     platforms = lib.platforms.all;
     mainProgram = "prpll";
   };
