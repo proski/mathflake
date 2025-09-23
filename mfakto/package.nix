@@ -37,7 +37,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p $out/bin $out/share/mfakto
     install -m755 mfakto $out/bin
-    install -m755 datatypes.h tf_debug.h mfakto.ini *.cl $out/share/mfakto
+    install -m644 datatypes.h tf_debug.h mfakto.ini *.cl $out/share/mfakto
 
     runHook postInstall
   '';
