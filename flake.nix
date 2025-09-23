@@ -22,12 +22,14 @@
           function (
             import nixpkgs {
               inherit system;
+              config.allowUnfree = true;
             }
           )
         );
     in
     {
       packages = forSystems supportedSystems (pkgs: rec {
+        mfaktc = pkgs.callPackage mfaktc/package.nix { };
         mfakto = pkgs.callPackage mfakto/package.nix { };
         prmers = pkgs.callPackage prmers/package.nix { };
         prpll = pkgs.callPackage prpll/package.nix { };

@@ -19,6 +19,10 @@ PRPLL: Probable Prime and Lucas-Lehmer Mersenne Primality Test
 
     nix profile install github:proski/mathflake#prpll
 
+mfaktc: CUDA based trial factoring program for Mersenne Primes (incomplete)
+
+    nix profile install github:proski/mathflake#mfakto
+
 mfakto: OpenCL based trial factoring program for Mersenne Primes
 
     nix profile install github:proski/mathflake#mfakto
